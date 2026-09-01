@@ -195,6 +195,16 @@ func WithIPv6Only() ConnectOption {
 	}
 }
 
+// WithICENetworkTypes overrides the ICE candidate network types that are
+// gathered locally and accepted from the remote. Pion defaults to UDP4/UDP6
+// only (TCP is not enabled). Pass NetworkTypeTCP4 to use an SFU rtc.tcp_port
+// candidate (ICE-TCP fallback or force-TCP).
+func WithICENetworkTypes(types ...webrtc.NetworkType) ConnectOption {
+	return func(p *connParams) {
+		p.ICENetworkTypes = types
+	}
+}
+
 // WithDisableRegionDiscovery disables automatic region discovery for LiveKit Cloud.
 func WithDisableRegionDiscovery() ConnectOption {
 	return func(p *connParams) {

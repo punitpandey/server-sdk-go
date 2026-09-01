@@ -101,6 +101,10 @@ type ConnectParams struct {
 	// are rejected before being added to the ICE agent.
 	IPv6Only bool
 
+	// ICENetworkTypes overrides pion's default ICE networks (UDP4/UDP6 only).
+	// Include webrtc.NetworkTypeTCP4 to accept SFU ICE-TCP (rtc.tcp_port) candidates.
+	ICENetworkTypes []webrtc.NetworkType
+
 	DTLSEllipticCurves []dtlsElliptic.Curve // FIPS 140: override default DTLS curves
 
 	// DataEncryptionKeyProvider enables data channel E2EE when set.

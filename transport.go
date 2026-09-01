@@ -89,6 +89,7 @@ type PCTransportParams struct {
 	IsSender                   bool
 	DTLSEllipticCurves         []dtlsElliptic.Curve
 	IPv6Only                   bool
+	ICENetworkTypes            []webrtc.NetworkType
 }
 
 func (t *PCTransport) registerDefaultInterceptors(params PCTransportParams, i *interceptor.Registry) error {
@@ -228,6 +229,9 @@ func NewPCTransport(params PCTransportParams) (*PCTransport, error) {
 		// and reject any IPv4 remote candidates advertised by the server.
 		se.SetIPFilter(isIPv6)
 		se.SetRemoteIPFilter(isIPv6)
+	}
+	if len(params.ICENetworkTypes) > 0 {
+		se.SetNetworkTypes(params.ICENetworkTypes)
 	}
 	lf := pionlogger.NewLoggerFactory(logger)
 	if lf != nil {
