@@ -58,11 +58,16 @@ func (s *signallingJoinRequest) ConnectQueryParams(
 	publisherOffer webrtc.SessionDescription,
 	participantSID string,
 ) (string, error) {
+	sdk := livekit.ClientInfo_GO
+	if connectParams.WantsICETCP() {
+		// See ConnectParams.WantsICETCP: the server drops tcp candidates for sdk=go.
+		sdk = livekit.ClientInfo_UNKNOWN
+	}
 	clientInfo := &livekit.ClientInfo{
 		Version:  version,
 		Protocol: int32(protocol),
 		Os:       runtime.GOOS,
-		Sdk:      livekit.ClientInfo_GO,
+		Sdk:      sdk,
 	}
 
 	connectionSettings := &livekit.ConnectionSettings{

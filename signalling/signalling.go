@@ -76,7 +76,14 @@ func (s *signalling) ConnectQueryParams(
 		str := base64.URLEncoding.EncodeToString(data)
 		queryParams += "&attributes=" + str
 	}
-	queryParams += "&sdk=go&os=" + runtime.GOOS
+	// ponytail: omitting sdk leaves ClientInfo.Sdk == UNKNOWN, which is the only
+	// way to get ICE-TCP candidates out of an unpatched server. Ceiling: also
+	// disables sctp zero-checksum. Upgrade path: drop once upstream allows
+	// ICE-TCP for sdk=go.
+	if !connectParams.WantsICETCP() {
+		queryParams += "&sdk=go"
+	}
+	queryParams += "&os=" + runtime.GOOS
 
 	return queryParams, nil
 }

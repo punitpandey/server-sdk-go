@@ -128,7 +128,23 @@ func (c ConnectParams) MarshalLogObject(e zapcore.ObjectEncoder) error {
 	e.AddUint16("RetransmitBufferSize", c.RetransmitBufferSize)
 	e.AddBool("DisableTURN", c.DisableTURN)
 	e.AddBool("UseSinglePeerConnection", c.UseSinglePeerConnection)
+	e.AddBool("WantsICETCP", c.WantsICETCP())
 	return nil
+}
+
+// WantsICETCP reports whether ICE-TCP was requested via ICENetworkTypes.
+//
+// LiveKit server hard-codes SupportsICETCP() == false for sdk=go
+// (pkg/rtc/clientinfo.go) and therefore withholds its passive tcp candidate
+// from Go clients, even though pion dials active ICE-TCP fine. Callers use this
+// to report an unrecognized SDK so the server takes its permissive branch.
+func (c ConnectParams) WantsICETCP() bool {
+	for _, t := range c.ICENetworkTypes {
+		if t == webrtc.NetworkTypeTCP4 || t == webrtc.NetworkTypeTCP6 {
+			return true
+		}
+	}
+	return false
 }
 
 type SignalTransport interface {
